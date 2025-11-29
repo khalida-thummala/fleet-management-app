@@ -76,3 +76,106 @@
     <div class="main" id="mainContent"></div>
 
 </div> <!-- container -->
+<script>
+let data = [];
+
+document.getElementById("addBtn").addEventListener("click", function () {
+    let reg = document.getElementById("reg").value;
+    let cat = document.getElementById("category").value;
+    let driver = document.getElementById("driver").value;
+    let avail = document.getElementById("available").value;
+
+    if (!reg || !driver) {
+        alert("Required fields cannot be empty");
+        return;
+    }
+
+    let obj = {
+        reg,
+        cat,
+        driver,
+        avail,
+        img: "https://via.placeholder.com/150"
+    };
+
+    data.push(obj);
+
+    document.getElementById("reg").value = "";
+    document.getElementById("driver").value = "";
+
+    render(data);
+});
+
+function render(arr) {
+    let main = document.getElementById("mainContent");
+    main.innerHTML = "";
+
+    arr.forEach((el, idx) => {
+        let div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            <img src="${el.img}" width="100%">
+            <p><b>Reg No:</b> ${el.reg}</p>
+            <p><b>Category:</b> ${el.cat}</p>
+            <p><b>Driver:</b> ${el.driver}</p>
+            <p><b>Status:</b> ${el.avail}</p>
+            <button onclick="updateDriver(${idx})">Update Driver</button>
+            <button onclick="toggleAvailability(${idx})">Change Availability</button>
+            <button onclick="deleteVehicle(${idx})">Delete Vehicle</button>
+        `;
+
+        main.appendChild(div);
+    });
+}
+function updateDriver(i) {
+    let newName = prompt("Enter new driver name:");
+
+    if (!newName || newName.trim() === "") {
+        alert("Driver name cannot be empty.");
+        return;
+    }
+
+    data[i].driver = newName;
+    render(data);
+}
+
+function toggleAvailability(i) {
+    data[i].avail = data[i].avail === "Available" ? "Unavailable" : "Available";
+    render(data);
+}
+
+function deleteVehicle(i) {
+    let ok = confirm("Are you sure?");
+    if (ok) {
+        data.splice(i, 1);
+        render(data);
+    }
+}
+
+// FILTERS
+document.getElementById("categoryFilter").addEventListener("change", filterData);
+document.getElementById("availabilityFilter").addEventListener("change", filterData);
+
+function filterData() {
+    let cat = document.getElementById("categoryFilter").value;
+    let av = document.getElementById("availabilityFilter").value;
+
+    let filtered = data.filter((el) => {
+        return (cat === "All" || el.cat === cat) &&
+               (av === "All" || el.avail === av);
+    });
+
+    render(filtered);
+}
+
+document.getElementById("clearFilter").addEventListener("click", function () {
+    document.getElementById("categoryFilter").value = "All";
+    document.getElementById("availabilityFilter").value = "All";
+
+    render(data);
+});
+</script>
+
+</body>
+</html>
